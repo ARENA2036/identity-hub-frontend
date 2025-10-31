@@ -1,2 +1,2 @@
-export * from './components/apiSlice';
+export * from './apiSlice';
 export * from './routes';

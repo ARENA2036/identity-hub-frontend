@@ -10,10 +10,11 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Grid2
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useListCredentialsQuery } from '../components/apiSlice';
+import { useListCredentialsQuery } from '../apiSlice';
 import CredentialAddDialog from '../components/CredentialAddDialog';
 import CredentialDetailsDialog from '../components/CredentialDetailsDialog';
 // @ts-ignore
@@ -21,7 +22,7 @@ import logo from '../../../assets/styles/tx.png';
 
 const DEFAULT_FILTER_TYPE = 'WalletCredential';
 
-// Mock credentials for preview when backend is off
+// Mock credentials 
 const MOCK_CREDENTIALS = [
   {
     id: 'cred-1',
@@ -62,18 +63,17 @@ const MOCK_CREDENTIALS = [
 ];
 
 const CredentialDetailsPage: React.FC = () => {
-  
+
   const [participantContextId] = useState('demo-participant');
   const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<any>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const { data = [], refetch } = useListCredentialsQuery(
-    { participantContextId, filterType: DEFAULT_FILTER_TYPE },
+  const { data = [], refetch } = useListCredentialsQuery(participantContextId, 
     { skip: true } // skip backend for now
   );
 
-  
+
   const wallets = data.length
     ? data
     : MOCK_CREDENTIALS.map((r) => ({ id: r.id, raw: r }));
@@ -93,28 +93,61 @@ const CredentialDetailsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#0b0b0b', minHeight: '100vh', color: '#fff' }}>
+    <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", p: 3 }}>
       {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" sx={{ fontWeight: 600 }}>
-          Wallets
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setAddOpen(true)}
-          sx={{
-            bgcolor: '#1e1e1e',
-            color: '#00ff90',
-            border: '1px solid #00ff90',
-            '&:hover': { bgcolor: '#00ff90', color: '#000' },
-            borderRadius: '20px',
-            fontWeight: 600,
-          }}
+      <Stack
+        direction="column"
+        alignItems="center"
+        sx={{ mb: 3, width: '100%' }}
+      >
+        {/* Title */}
+        <Grid2
+          className="product-catalog"
+          container
+          direction="column"
+          alignItems="center"
+          sx={{ mb: 2 }}
         >
-          NEW
-        </Button>
+          <Grid2>
+            <Typography
+              className="text"
+              variant="h3"
+              sx={{
+                fontWeight: 600,
+                color: '#1273e2ff',
+                position: 'relative',
+                textAlign: 'center',
+              }}
+            >
+              Credentials
+            </Typography>
+          </Grid2>
+        </Grid2>
+
+
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          sx={{ width: '100%', mb: 3 }}
+        >
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setAddOpen(true)}
+            sx={{
+              bgcolor: '#1e1e1e',
+              color: '#1273e2ff',
+              border: '1px solid #1273e2ff',
+              '&:hover': { bgcolor: '#1695b4ff', color: '#000' },
+              borderRadius: '20px',
+              fontWeight: 600,
+            }}
+          >
+            NEW
+          </Button>
+        </Stack>
       </Stack>
+
 
       {/* Card Grid */}
       <Grid container spacing={2}>
@@ -135,7 +168,7 @@ const CredentialDetailsPage: React.FC = () => {
                   height: 170,
                   borderRadius: '12px',
                   position: 'relative',
-                  '&:hover': { borderColor: '#00ff90' },
+                  '&:hover': { borderColor: '#1273e2ff' },
                 }}
                 onClick={() => {
                   setSelected(wallet.raw);
@@ -171,7 +204,9 @@ const CredentialDetailsPage: React.FC = () => {
                         width: 44,
                         height: 44,
                         objectFit: 'contain',
-                        border: '1px solid #2a2a2a',
+                        position: 'absolute',
+                        top: '15px',
+                        right: '25px',
                         borderRadius: '6px',
                         ml: 1,
                       }}
@@ -192,10 +227,7 @@ const CredentialDetailsPage: React.FC = () => {
                     </Typography>
                   </Stack>
 
-                  {/* footer line */}
-                  <Box sx={{ position: 'absolute', left: 0, right: 0, bottom: 6 }}>
-                    <Box sx={{ borderTop: '2px solid #2a2a2a', mx: 1 }} />
-                  </Box>
+
                 </CardContent>
               </Card>
             </Grid>
@@ -208,7 +240,19 @@ const CredentialDetailsPage: React.FC = () => {
         anchorEl={menuAnchor}
         open={openMenu}
         onClose={handleCloseMenu}
-        PaperProps={{ sx: { bgcolor: '#1c1c1c', color: '#fff' } }}
+        PaperProps={{
+           sx: {
+      bgcolor: '#1c1c1c',
+      color: '#fff',
+      '& .MuiMenuItem-root': {
+        color: '#fff',
+        '&:hover': {
+          bgcolor: '#333',
+          color: '#00e5ff', 
+        },
+      },
+    },
+          }}
       >
         <MenuItem onClick={handleCloseMenu}>Details</MenuItem>
       </Menu>

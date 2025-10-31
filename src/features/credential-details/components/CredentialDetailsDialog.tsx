@@ -1,16 +1,16 @@
 import React from 'react';
 import {
-  Box,
   Dialog,
   DialogContent,
-  IconButton,
-  Typography,
   Stack,
-  Button,
+  Typography,
+  IconButton,
   Menu,
   MenuItem,
+  Button,
   Snackbar,
   Alert,
+  Box,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -21,6 +21,12 @@ import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 // @ts-ignore
 import logo from '../../../assets/styles/tx.png';
 
+import {
+  useVerifyCredentialMutation,
+  useRevokeCredentialMutation,
+  useRotateKeyMutation,
+} from '../apiSlice';
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -29,11 +35,19 @@ type Props = {
 
 const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential }) => {
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
-  const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string; color: 'success' | 'error' | 'info' }>({
+  const [snackbar, setSnackbar] = React.useState<{
+    open: boolean;
+    message: string;
+    color: 'success' | 'error' | 'info';
+  }>({
     open: false,
     message: '',
     color: 'info',
   });
+
+  const [verifyCredential, { isLoading: verifying }] = useVerifyCredentialMutation();
+  const [revokeCredential, { isLoading: revoking }] = useRevokeCredentialMutation();
+  const [rotateKey, { isLoading: rotating }] = useRotateKeyMutation();
 
   const cred = credential?.verifiableCredentialContainer?.credential;
   const cs = Array.isArray(cred?.credentialSubject) ? cred.credentialSubject[0] : {};
@@ -43,8 +57,42 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
   const toast = (message: string, color: 'success' | 'error' | 'info') =>
     setSnackbar({ open: true, message, color });
 
+  const participantId = credential?.participantContextId || 'demo-participant';
+  const credentialId = credential?.id;
+
+  const handleVerify = async () => {
+    try {
+      await verifyCredential({ participantId, credentialId }).unwrap();
+      toast('Credential verified successfully', 'success');
+    } catch (e) {
+      toast('Verification failed', 'error');
+      console.error(e);
+    }
+  };
+
+  const handleRevoke = async () => {
+    try {
+      await revokeCredential({ participantId, credentialId }).unwrap();
+      toast('Credential revoked successfully', 'success');
+    } catch (e) {
+      toast('Revoke failed', 'error');
+      console.error(e);
+    }
+  };
+
+  const handleRotateKey = async () => {
+    try {
+      await rotateKey({ participantContextId: participantId, credentialId }).unwrap();
+      toast('Key rotated successfully', 'info');
+    } catch (e) {
+      toast('Key rotation failed', 'error');
+      console.error(e);
+    }
+  };
+
+
   return (
-     <>
+    <>
       <Dialog
         open={open}
         onClose={onClose}
@@ -52,11 +100,11 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
           sx: {
             bgcolor: '#0b0b0b',
             color: '#fff',
-            width: 'min(1100px, 82vw)',     
-            height: 'min(640px, 70vh)',     
+            width: 'min(1100px, 82vw)',
+            height: 'min(640px, 70vh)',
             maxWidth: 'none',
             borderRadius: '16px',
-            boxShadow: '0 0 30px rgba(0, 180, 255, 0.25)', 
+            boxShadow: '0 0 30px rgba(0, 180, 255, 0.25)',
             border: '1px solid rgba(0, 180, 255, 0.2)',
             display: 'flex',
             flexDirection: 'column',
@@ -65,8 +113,8 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
         slotProps={{
           backdrop: {
             sx: {
-              backgroundColor: 'rgba(0, 0, 0, 0)', 
-              backdropFilter: 'blur(10px)',          
+              backgroundColor: 'rgba(0, 0, 0, 0)',
+              backdropFilter: 'blur(10px)',
             },
           },
         }}
@@ -99,11 +147,44 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
               anchorEl={menuAnchor}
               open={!!menuAnchor}
               onClose={handleMenuClose}
-              PaperProps={{ sx: { bgcolor: '#1c1c1c', color: '#fff' } }}
+              PaperProps={{
+                sx: {
+                  bgcolor: '#1c1c1c',
+                  color: '#fff',
+                  '& .MuiMenuItem-root': {
+                    color: '#fff',
+                    '&:hover': {
+                      bgcolor: '#333',
+                      color: '#00e5ff',
+                    },
+                  },
+                },
+              }}
             >
-              <MenuItem onClick={() => { handleMenuClose(); toast('Verified', 'success'); }}>Verify</MenuItem>
-              <MenuItem onClick={() => { handleMenuClose(); toast('Revoked', 'error'); }}>Revoke</MenuItem>
-              <MenuItem onClick={() => { handleMenuClose(); toast('Key rotated', 'info'); }}>Rotate Key</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                  handleVerify();
+                }}
+              >
+                Verify
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                  handleRevoke();
+                }}
+              >
+                Revoke
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                  handleRotateKey();
+                }}
+              >
+                Rotate Key
+              </MenuItem>
             </Menu>
           </Stack>
 
@@ -120,7 +201,7 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
               </Typography>
 
               <Typography variant="body1" sx={{ color: '#dfe6e9' }}>
-                Issuer: <b style={{ color: '#00ff90' }}>{cred?.issuer ?? 'did:web:domain.com'}</b>
+                Issuer: <b style={{ color: '#1695b4ff' }}>{cred?.issuer ?? 'did:web:domain.com'}</b>
               </Typography>
               <Typography variant="body1" sx={{ color: '#dfe6e9' }}>
                 Holder: <b style={{ color: '#00bfff' }}>{(cs?.id as string) ?? 'did:web:webpage.com'}</b>
@@ -148,7 +229,7 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
               </Box>
             </Stack>
 
-           
+            {/* Right Section */}
             <Stack
               spacing={3}
               alignItems="center"
@@ -168,11 +249,24 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
                   width: 90,
                   height: 90,
                   objectFit: 'contain',
+                  position: 'absolute',
+                  top: '50px',
+                  right: '60px',
                   mt: -10.5,
                   mb: 1,
                 }}
               />
-              <Typography variant="body2" sx={{ color: '#9aa0a6' }}>Catena-X</Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#9aa0a6',
+                  position: 'absolute',
+                  top: '120px',
+                  right: '70px',
+                }}
+              >
+                Catena-X
+              </Typography>
 
               <Stack spacing={0.5} alignItems="center">
                 <Typography variant="body2" sx={{ color: '#bdbdbd' }}>
@@ -187,7 +281,8 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
                 <Button
                   variant="outlined"
                   endIcon={<VerifiedUserOutlinedIcon />}
-                  onClick={() => toast('Verified', 'success')}
+                  disabled={verifying}
+                  onClick={handleVerify}
                   sx={{
                     borderColor: '#00ff90',
                     color: '#00ff90',
@@ -196,12 +291,13 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
                     '&:hover': { bgcolor: '#00331f', borderColor: '#00ff90' },
                   }}
                 >
-                  VERIFY
+                  {verifying ? 'Verifying...' : 'VERIFY'}
                 </Button>
                 <Button
                   variant="outlined"
                   endIcon={<RemoveCircleOutlineIcon />}
-                  onClick={() => toast('Revoked', 'error')}
+                  disabled={revoking}
+                  onClick={handleRevoke}
                   sx={{
                     borderColor: '#ff4d4d',
                     color: '#ff4d4d',
@@ -210,12 +306,13 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
                     '&:hover': { bgcolor: '#330000', borderColor: '#ff4d4d' },
                   }}
                 >
-                  REVOKE
+                  {revoking ? 'Revoking...' : 'REVOKE'}
                 </Button>
                 <Button
                   variant="outlined"
                   endIcon={<CachedOutlinedIcon />}
-                  onClick={() => toast('Key rotated', 'info')}
+                  disabled={rotating}
+                  onClick={handleRotateKey}
                   sx={{
                     borderColor: '#00bfff',
                     color: '#00bfff',
@@ -224,7 +321,7 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
                     '&:hover': { bgcolor: '#002a33', borderColor: '#00bfff' },
                   }}
                 >
-                  ROTATE KEY
+                  {rotating ? 'Rotating...' : 'ROTATE KEY'}
                 </Button>
               </Stack>
             </Stack>
@@ -234,7 +331,7 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
 
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={1800}
+        autoHideDuration={2000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
         <Alert
@@ -247,8 +344,8 @@ const CredentialDetailsDialog: React.FC<Props> = ({ open, onClose, credential })
               snackbar.color === 'error'
                 ? '#ff4d4d'
                 : snackbar.color === 'success'
-                ? '#00ff90'
-                : '#00bfff',
+                  ? '#00ff90'
+                  : '#00bfff',
           }}
         >
           {snackbar.message}
