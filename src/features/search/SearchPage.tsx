@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography , Grid2} from "@mui/material";
 
 export default function SearchPage() {
   return (
@@ -10,9 +10,29 @@ export default function SearchPage() {
         minHeight: "80vh",
       }}
     >
-      <Typography variant="h5" gutterBottom>
-        Search
-      </Typography>
+      <Grid2
+          className="product-catalog"
+          container
+          direction="column"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
+          <Grid2>
+            <Typography
+              className="text"
+              variant="h3"
+              sx={{
+                fontWeight: 600,
+                color: '#1273e2ff',
+                position: 'relative',
+                textAlign: 'center',
+              }}
+            >
+              Search
+            </Typography>
+          </Grid2>
+        </Grid2>
+
       <Typography variant="h3" color="#8b949e">
         The search interface will appear here once backend integration is ready.
       </Typography>

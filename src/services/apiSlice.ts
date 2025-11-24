@@ -7,7 +7,10 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: env.ICHUB_BACKEND_URL || 'http://localhost:9000/v1',
     prepareHeaders: (headers) => {
-      if (env.API_KEY) headers.set(env.API_KEY_HEADER || 'X-API-Key', env.API_KEY);
+    
+      if (env.API_KEY) {
+        headers.set('X-Api-Key', env.API_KEY);
+      }
       return headers;
     },
   }),

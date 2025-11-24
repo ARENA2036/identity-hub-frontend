@@ -73,7 +73,7 @@ export interface AppConfig {
     version: string;
     buildTime: string;
   };
-  
+
   // API and backend configuration
   api: {
     ichubBackendUrl: string;
@@ -86,7 +86,7 @@ export interface AppConfig {
     enableApiKeyRotation: boolean;
     apiKeyExpiryWarningDays: number;
   };
-  
+
   // Authentication configuration
   auth: {
     enabled: boolean;
@@ -112,26 +112,26 @@ export interface AppConfig {
     renewTokenMinValidity: number;
     logoutRedirectUri?: string;
   };
-  
+
   // Participant configuration
   participant: {
     id: string;
     bpnValidationPattern?: string;
   };
-  
+
   // Governance and policies
   governance: {
     config: GovernanceConfig[];
     dtrPolicies: GovernancePolicy[];
   };
-  
+
   // Feature flags
   features: {
     enableAdvancedLogging: boolean;
     enablePerformanceMonitoring: boolean;
     enableDevTools: boolean;
   };
-  
+
   // UI and theming
   ui: {
     theme: 'light' | 'dark' | 'auto';
@@ -145,23 +145,23 @@ export interface RawEnvironmentConfig {
   // Core application
   VITE_APP_ENVIRONMENT?: string;
   VITE_APP_VERSION?: string;
-  
+
   // API configuration
   VITE_ICHUB_BACKEND_URL?: string;
   VITE_API_TIMEOUT?: string;
   VITE_API_RETRY_ATTEMPTS?: string;
   VITE_REQUIRE_HTTPS_URL_PATTERN?: string;
-  
+
   // API key configuration
   VITE_API_KEY?: string;
   VITE_API_KEY_HEADER?: string;
   VITE_ENABLE_API_KEY_ROTATION?: string;
   VITE_API_KEY_EXPIRY_WARNING_DAYS?: string;
-  
+
   // Authentication configuration
   VITE_AUTH_ENABLED?: string;
   VITE_AUTH_PROVIDER?: string;
-  
+
   // Keycloak configuration
   VITE_KEYCLOAK_URL?: string;
   VITE_KEYCLOAK_REALM?: string;
@@ -174,29 +174,37 @@ export interface RawEnvironmentConfig {
   VITE_KEYCLOAK_MIN_VALIDITY?: string;
   VITE_KEYCLOAK_CHECK_LOGIN_IFRAME_INTERVAL?: string;
   VITE_KEYCLOAK_FLOW?: string;
-  
+
   // Session management
   VITE_AUTH_SESSION_TIMEOUT?: string;
   VITE_AUTH_RENEW_TOKEN_MIN_VALIDITY?: string;
   VITE_AUTH_LOGOUT_REDIRECT_URI?: string;
-  
+
   // Participant configuration
   VITE_PARTICIPANT_ID?: string;
   VITE_BPN_VALIDATION_PATTERN?: string;
-  
+
   // Governance and policies
   VITE_GOVERNANCE_CONFIG?: string;
   VITE_DTR_POLICIES_CONFIG?: string;
-  
+
   // Feature flags
   VITE_ENABLE_ADVANCED_LOGGING?: string;
   VITE_ENABLE_PERFORMANCE_MONITORING?: string;
   VITE_ENABLE_DEV_TOOLS?: string;
-  
+
   // UI configuration
   VITE_UI_THEME?: string;
   VITE_UI_LOCALE?: string;
   VITE_UI_COMPACT_MODE?: string;
+
+  VITE_IDENTITY_PATH?: string;
+VITE_CREDENTIAL_PATH: string
+VITE_DID_PATH?: string;
+VITE_ISSUANCE_PATH?: string;
+VITE_ISSUER_ADMIN_PATH?: string;
+VITE_STATUS_LIST_PATH?: string;
+VITE_STS_PATH?: string;
 }
 
 // Configuration error class

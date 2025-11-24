@@ -20,40 +20,77 @@
  * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
 
-import { Assignment, Search } from '@mui/icons-material';
-
+import { Assignment, DeviceHub, Search, AccountCircle, PeopleAlt, SwitchAccount, SyncLock } from '@mui/icons-material';
 
 import { FeatureConfig, NavigationItem } from '../types/routing';
-import { credentialDetailsFeature } from './credential-details/routes';
+
+import CredentialPage from '../features/credentials/CredentialPage';
+import ParticipantContextPage from '../features/participant-context/ParticipantContextPage';
 import SearchPage from '../features/search/SearchPage';
+import { KeypairSidebarIcon } from '../features/keypairs/KeypairSidebar';
+import IdentityGrid from "./identity/Identity";
+import DidPage from '../features/did/DidPage';
+import KeypairPage from './keypairs/KeypairPage';
 
 export const allFeatures: FeatureConfig[] = [
-  
 
-  credentialDetailsFeature,
+
   {
-     name: "Search",
-  icon: <Search />,
-  navigationPath: "/search",
-  disabled: false,
-  routes: [
-    {
-      path: "/search",
-      index: true,
-      element: <SearchPage />,
-    },
-  ]
+    name: 'Participant Context',
+    icon: <SwitchAccount />,
+    navigationPath: '/participant-context',
+    disabled: false,
+    routes: [{ path: '/participant-context', element: <ParticipantContextPage /> }],
+  },
+  {
+    name: 'Search',
+    icon: <Search />,
+    navigationPath: '/search',
+    disabled: false,
+    routes: [{ path: '/search', index: true, element: <SearchPage /> }]
+  },
+
+  {
+    name: 'Identity',
+    icon: <PeopleAlt />,
+    navigationPath: '/identity',
+    disabled: false,
+    routes: [{ path: '/identity', element: <IdentityGrid /> }],
+  },
+  {
+    name: 'KeyPairs',
+    icon: <KeypairSidebarIcon />,
+    navigationPath: '/keypairs',
+    disabled: false,
+    routes: [{ path: '/keypairs', element: <KeypairPage /> }],
+  },
+  {
+    name: 'DID',
+    icon: <DeviceHub />,
+    navigationPath: '/did',
+    disabled: false,
+    routes: [
+      { path: '/did', element: <DidPage /> },
+    ],
+  },
+  {
+    name: 'Credentials',
+    icon: <SyncLock />,
+    navigationPath: '/credentials',
+    disabled: false,
+    routes: [
+      { path: '/credentials', element: <CredentialPage /> }
+    ],
   }
+
 ];
 
-
-export const features: NavigationItem[] = allFeatures.map(feature => ({
-  icon: feature.icon,
+export const features: NavigationItem[] = allFeatures.map((feature) => ({
+  icon: feature.navigationPath === '/identity' ? <PeopleAlt /> : feature.icon,
   path: feature.navigationPath,
-  disabled: feature.disabled
+  disabled: feature.disabled,
 }));
 
-// Get all routes from all features
 export const getAllRoutes = () => {
-  return allFeatures.flatMap(feature => feature.routes);
+  return allFeatures.flatMap((feature) => feature.routes);
 };
